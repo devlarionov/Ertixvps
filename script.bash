@@ -29,12 +29,29 @@ function install_package {
     local install_message="$2"
     local success_message="$3"
     local error_message="$4"
-
+    
     orange_text "$install_message"
-    if apk add "$package_name"; then
-        green_text "$success_message"
+    
+    if [[ -f /etc/alpine-release ]]; then
+        if apk add "$package_name"; then
+            green_text "$success_message"
+        else
+            red_text "$error_message"
+        fi
+    elif [[ -f /etc/lsb-release || -f /etc/debian_version ]]; then
+        if apt-get update && apt-get install -y "$package_name"; then
+            green_text "$success_message"
+        else
+            red_text "$error_message"
+        fi
+    elif [[ -f /etc/redhat-release ]]; then
+        if yum install -y "$package_name"; then
+            green_text "$success_message"
+        else
+            red_text "$error_message"
+        fi
     else
-        red_text "$error_message"
+        red_text "Unsupported operating system."
     fi
 }
 
@@ -50,8 +67,17 @@ function prompt_and_install {
     fi
 }
 
-rainbow_text "Setup your VPS in one second. By itsoffkey."
+if [[ -f /etc/alpine-release ]]; then
+    OS="Alpine Linux"
+elif [[ -f /etc/lsb-release || -f /etc/debian_version ]]; then
+    OS="Ubuntu/Debian"
+elif [[ -f /etc/redhat-release ]]; then
+    OS="CentOS/RedHat"
+else
+    OS="Unsupported OS"
+fi
 
+rainbow_text "Setup your VPS in one second. By itsoffkey."
 sleep 3
 
 install_package "python3" "Installing python..." "Python installed!" "Error installing python."
@@ -66,7 +92,6 @@ read -p "Need to install nginx? (y/n): " nginx_choice
 if [[ "$nginx_choice" == "y" || "$nginx_choice" == "Y" ]]; then
     install_package "nginx" "Installing nginx..." "Nginx installed!" "Error installing nginx."
 else
-    # Установка apache при подтверждении пользователя, если nginx не установлен
     read -p "Need to install apache? (y/n): " apache_choice
     if [[ "$apache_choice" == "y" || "$apache_choice" == "Y" ]]; then
         if ! command -v nginx &> /dev/null; then
