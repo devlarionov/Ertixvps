@@ -87,6 +87,9 @@ install_package "openjdk11" "Installing OpenJDK..." "OpenJDK installed!" "Error 
 install_package "git" "Installing Git..." "Git installed!" "Error installing Git."
 install_package "curl" "Installing Curl..." "Curl installed!" "Error installing Curl."
 install_package "docker" "Installing Docker..." "Docker installed!" "Error installing Docker."
+install_package "screen" "Installing Screen..." "Screen installed!" "Error installing Screen."
+install_package "nano" "Installing Nano..." "Nano installed!" "Error installing Nano."
+install_package "neofetch" "Installing Neofetch..." "Neofetch installed!" "Error installing Neofetch."
 
 read -p "Need to install nginx? (y/n): " nginx_choice
 if [[ "$nginx_choice" == "y" || "$nginx_choice" == "Y" ]]; then
